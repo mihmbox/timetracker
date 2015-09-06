@@ -2,39 +2,58 @@ package main
 import (
 	"model"
 	"fmt"
-	"controllers"
-	"github.com/gorilla/mux"
 	"net/http"
+	"os"
+	"github.com/gorilla/mux"
+	"github.com/gorilla/handlers"
+	"logger"
+	"io/ioutil"
+	"middleware"
+	"flag"
+	"routes"
+	"app"
 )
 
-const (
-	CREATE_DB = true
-	PORT = 8080
+var (
+	port = flag.Int("port,p", 8080, "Http port")
+	initDB = flag.Bool("initDB", true, "Crete DB schema")
 )
+
+
+func init() {
+	app.Init()
+
+	// Configure App logger
+	logger.Init(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
+	flag.Parse()
+}
+
 
 func main() {
 	// Build DB Model
-	if CREATE_DB {
+	if *initDB {
+		logger.Info.Println("Starting DB creation")
 		if err := model.CreateDB(); err != nil {
+			logger.Error.Println("Cannot create DB")
 			panic(err.Error())
 		} else {
-			fmt.Println("DB created")
+			logger.Info.Println("DB created")
 		}
 	}
 
 	// Build routes and start webApp
-	mx := mux.NewRouter()
-	controllers.Build(mx)
-
+	router := mux.NewRouter()
+	// Routes
+	routes.Init(router)
 	// Static files
-	mx.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public/"))))
-	// http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+	router.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public/"))))
 
+	var handler http.Handler = router
+	// Logging
+	handler = handlers.LoggingHandler(os.Stdout, handler)
+	// Authorization middleware
+	handler = middleware.AuthMiddleware(handler)
 
-	fmt.Println("Listening. Port: ", PORT)
-	http.ListenAndServe(fmt.Sprintf(":%v", PORT), mx)
-
-//	n := negroni.Classic()
-//	n.UseHandler(mx)
-//	n.Run(fmt.Sprintf(":%v", PORT))
+	fmt.Println("Listening. Port: ", *port)
+	http.ListenAndServe(fmt.Sprintf(":%v", *port), handler)
 }

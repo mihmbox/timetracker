@@ -3,26 +3,20 @@ package controllers
 import (
 	"github.com/gorilla/mux"
 	"net/http"
-	//"routes"
 	"strings"
+	"app"
 )
 
-const (
-	HOME = "home"
-	SIGNIN = "signin"
-)
-
-
-func Build(mx *mux.Router)  {
-	mx.HandleFunc("/", Home).Name(HOME)
-	mx.HandleFunc("/signin/{email}", Signin).Name(SIGNIN) //.Methods("POST")
-}
-
-
+// Home page Controller
 func Home(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Home page"));
+	data := struct { Title string}{"Home page"}
+	err := app.App.Template.ExecuteTemplate(w, "index", data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
+// SighIn Controller
 func Signin(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	email, ok := vars["email"]
