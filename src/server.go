@@ -1,35 +1,34 @@
 package main
+
 import (
-	"model"
+	"app"
+	"flag"
 	"fmt"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"io/ioutil"
+	"logger"
+	"middleware"
+	"model"
 	"net/http"
 	"os"
-	"github.com/gorilla/mux"
-	"github.com/gorilla/handlers"
-	"logger"
-	"io/ioutil"
-	"middleware"
-	"flag"
 	"routes"
-	"app"
 )
 
 var (
-	port = flag.Int("port,p", 8080, "Http port")
-	initDB = flag.Bool("initDB", true, "Crete DB schema")
+	port   = flag.Int("port,p", 8080, "Http port")
+	initDB = flag.Bool("initDB", false, "Crete DB schema")
 )
 
-
 func init() {
-	app.Init()
-
 	// Configure App logger
 	logger.Init(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
 	flag.Parse()
 }
 
-
 func main() {
+	app.Init()
+
 	// Build DB Model
 	if *initDB {
 		logger.Info.Println("Starting DB creation")

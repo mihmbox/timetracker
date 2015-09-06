@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 	"os"
+	"logger"
 )
 
 type Application struct {
@@ -17,6 +18,7 @@ var App *Application
 func Init() {
 	App = &Application{}
 	if err := App.LoadTemplates(); err != nil {
+		logger.Error.Println(err.Error())
 		panic("Can not load templates")
 	}
 }
@@ -32,6 +34,9 @@ func (application *Application) LoadTemplates() error {
 		return nil
 	}
 
+//	pwd, _ := os.Getwd()
+//	path := pwd + "/views/"
+//	err := filepath.Walk(path, fn)
 	err := filepath.Walk("./src/views", fn)
 
 	if err != nil {
