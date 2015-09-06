@@ -1,6 +1,5 @@
 package main
 import (
-	"model"
 	"fmt"
 	"net/http"
 	"os"
@@ -12,6 +11,7 @@ import (
 	"flag"
 	"routes"
 	"app"
+	"model"
 )
 
 var (
@@ -21,8 +21,6 @@ var (
 
 
 func init() {
-	app.Init()
-
 	// Configure App logger
 	logger.Init(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
 	flag.Parse()
@@ -30,6 +28,8 @@ func init() {
 
 
 func main() {
+	app.Init()
+
 	// Build DB Model
 	if *initDB {
 		logger.Info.Println("Starting DB creation")
