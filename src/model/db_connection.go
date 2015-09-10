@@ -1,16 +1,19 @@
 package model
+
 import (
-	_ "github.com/lib/pq"
+	"app"
 	"github.com/jinzhu/gorm"
+	_ "github.com/lib/pq"
 )
 
-const (
-	CONNECTION_STRING = "host=localhost port=5432 user=postgres password=root dbname=TimeTrack sslmode=disable"
-	DB_DIALECT = "postgres"
-)
+//const (
+//	CONNECTION_STRING = "host=localhost port=5432 user=postgres password=root dbname=TimeTrack sslmode=disable"
+//	DB_DIALECT = "postgres"
+//)
 
 func GetConnection() (gorm.DB, error) {
-	return gorm.Open(DB_DIALECT, CONNECTION_STRING)
+	cfg := app.App.Config.Db
+	return gorm.Open(cfg.Dialect, cfg.ConnectionString)
 }
 
 func CreateDB() error {
