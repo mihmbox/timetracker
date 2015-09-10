@@ -15,11 +15,6 @@ import (
 	"routes"
 )
 
-var (
-	port   = flag.Int("port,p", 8080, "Http port")
-	initDB = flag.Bool("initDB", false, "Crete DB schema")
-)
-
 func init() {
 	// Configure App logger
 	logger.Init(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
@@ -30,7 +25,7 @@ func main() {
 	app.Init()
 
 	// Build DB Model
-	if *initDB {
+	if app.App.Config.Db.CreateDB {
 		logger.Info.Println("Starting DB creation")
 		if err := model.CreateDB(); err != nil {
 			logger.Error.Println("Cannot create DB")
@@ -52,7 +47,12 @@ func main() {
 	handler = handlers.LoggingHandler(os.Stdout, handler)
 	// Authorization middleware
 	handler = middleware.AuthMiddleware(handler)
+	// liveReload
+	if app.App.Config.Env.DevMode {
+		handler = middleware.ReloadTemplates(handler)
+	}
 
-	fmt.Println("Listening. Port: ", *port)
-	http.ListenAndServe(fmt.Sprintf(":%v", *port), handler)
+	port := app.App.Config.Server.Port
+	fmt.Println("Listening. Port: ", port)
+	http.ListenAndServe(fmt.Sprintf(":%v", port), handler)
 }

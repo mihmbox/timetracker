@@ -1,14 +1,17 @@
 package app
+
 import (
+	"code.google.com/p/gcfg"
 	"github.com/gorilla/mux"
 	"html/template"
+	"logger"
+	"os"
 	"path/filepath"
 	"strings"
-	"os"
-	"logger"
 )
 
 type Application struct {
+	Config   Config
 	Router   *mux.Router
 	Template *template.Template
 }
@@ -17,14 +20,31 @@ var App *Application
 
 func Init() {
 	App = &Application{}
+
+	if err := App.InitCfg(); err != nil {
+		logger.Error.Println(err.Error())
+		panic("Can't parse configuration in file './src/config.ini'")
+	}
+
 	if err := App.LoadTemplates(); err != nil {
 		logger.Error.Println(err.Error())
 		panic("Can not load templates")
 	}
 }
 
+// Parse and load configurations from file
+func (app *Application) InitCfg() error {
+	var cfg Config
+	if err := gcfg.ReadFileInto(&cfg, "./src/config.ini"); err != nil {
+		return err
+	}
 
-func (application *Application) LoadTemplates() error {
+	app.Config = cfg
+	return nil
+}
+
+// Loads and parses html templates
+func (app *Application) LoadTemplates() error {
 	var templates []string
 
 	fn := func(path string, f os.FileInfo, err error) error {
@@ -34,10 +54,10 @@ func (application *Application) LoadTemplates() error {
 		return nil
 	}
 
-//	pwd, _ := os.Getwd()
-//	path := pwd + "/views/"
-//	err := filepath.Walk(path, fn)
-	err := filepath.Walk("./src/views", fn)
+	//	pwd, _ := os.Getwd()
+	//	path := pwd + "/views/"
+	//	err := filepath.Walk(path, fn)
+	err := filepath.Walk(app.Config.Server.Public, fn)
 
 	if err != nil {
 		return err
@@ -48,7 +68,7 @@ func (application *Application) LoadTemplates() error {
 		return err
 	}
 
-	application.Template = template.Must(tmpl, err)
+	app.Template = template.Must(tmpl, err)
 
 	return nil
 }
