@@ -41,6 +41,8 @@ func main() {
 	routes.Init(router)
 	// Static files
 	router.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public/"))))
+	// 404 handler
+	router.NotFoundHandler = middleware.NotFound()
 
 	var handler http.Handler = router
 	// Logging
