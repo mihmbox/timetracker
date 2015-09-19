@@ -9,8 +9,9 @@ type Config struct {
 		DevMode bool
 	}
 	Server struct {
-		Port   int
-		Public string
+		Port        int
+		Templates   string
+		AssetsProxy string
 	}
 	Db struct {
 		CreateDB         bool
