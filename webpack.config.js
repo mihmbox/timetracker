@@ -8,7 +8,6 @@ var path = require('path');
 var publicPath = 'public/build';
 module.exports = {
     entry: [
-        //'webpack/hot/dev-server',
         'webpack-dev-server/client?http://localhost:8080',
         path.resolve(__dirname, 'public/main.js')
     ],

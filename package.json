@@ -4,6 +4,7 @@
   "description": "Time tracker application.",
   "main": "index.js",
   "dependencies": {
+    "materialize-css": "^0.97.1",
     "react": "^0.13.3"
   },
   "devDependencies": {

@@ -1,0 +1,57 @@
+{{define "header"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <title>{{.Title}}</title>
+
+    <!--Import Google Icon Font-->
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="/public/lib/materialize-css/dist/css/materialize.min.css"
+          media="screen,projection"/>
+
+    <link rel="stylesheet" href="/public/style.css">
+</head>
+<body>
+<!--Import jQuery before materialize.js-->
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="/public/lib/materialize-css/dist/js/materialize.min.js"></script>
+
+<header>
+    <nav class="teal" role="navigation">
+        <div class="nav-wrapper container">
+            <a id="logo-container" href="/" class="brand-logo">
+                <img src="/public/img/logo.png" class="brand-logo_img">
+                <span class="brand-logo_text">TimeTracker</span>
+            </a>
+
+            <ul class="right hide-on-med-and-down">
+                <li>
+                    <a class="waves-effect  btn yellow darken-4">Sign up</a>
+                    <a class="waves-effect waves-light btn">Sign in</a>
+                </li>
+            </ul>
+
+            <a href="#" data-activates="nav-mobile" class="button-collapse">
+                <i class="material-icons">menu</i>
+            </a>
+            <ul id="nav-mobile" class="side-nav ">
+                <li class="logo">
+                    <a href="http://materializecss.com/" class="brand-logo">
+                        <img src="/public/img/logo.png" class="brand-logo_img">
+                    </a></li>
+                <li class="bold">
+                    <a href="#" class="waves-effect waves-teal">Sign Up</a>
+                </li>
+                <li class="bold">
+                    <a href="#" class="waves-effect waves-teal">Sign In</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+{{ end }}
