@@ -1,6 +1,5 @@
 package app
 
-
 import (
 	"code.google.com/p/gcfg"
 	"github.com/gorilla/mux"
@@ -58,7 +57,7 @@ func (app *Application) LoadTemplates() error {
 	//	pwd, _ := os.Getwd()
 	//	path := pwd + "/views/"
 	//	err := filepath.Walk(path, fn)
-	err := filepath.Walk(app.Config.Server.Public, fn)
+	err := filepath.Walk(app.Config.Server.Templates, fn)
 
 	if err != nil {
 		return err
