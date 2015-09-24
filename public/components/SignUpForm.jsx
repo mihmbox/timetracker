@@ -4,9 +4,11 @@ export default class SignUpForm extends React.Component {
     render() {
         return (
             <div className="SignUpForm">
-                <div>
-                    <div className="SignUpForm_header card-panel teal white-text" ><span>Sign Up</span></div>
-                </div>
+                {this.props.showHeader && (
+                    <div>
+                        <div className="SignUpForm_header card-panel teal white-text"><span>Sign Up</span></div>
+                    </div>
+                )}
                 <form className="SignUpForm_form col s12 white" method="post" action="/signup">
                     <div className="row">
                         <div className="input-field col s12">
@@ -31,3 +33,9 @@ export default class SignUpForm extends React.Component {
         );
     }
 }
+SignUpForm.defaultProps = {
+    showHeader: true
+};
+SignUpForm.propTypes = {
+    showHeader: React.PropTypes.bool
+};
