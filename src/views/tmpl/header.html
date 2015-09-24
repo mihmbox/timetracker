@@ -11,17 +11,20 @@
     <!--Import Google Icon Font-->
     <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!--Import materialize.css-->
-    <link type="text/css" rel="stylesheet" href="/public/lib/materialize-css/dist/css/materialize.min.css"
+    <link type="text/css" rel="stylesheet" href="/node_modules/materialize-css/dist/css/materialize.min.css"
           media="screen,projection"/>
 
     <link rel="stylesheet" href="/public/style.css">
 </head>
 <body>
+<!--ReactJS-->
+<script type="text/javascript" src="http://localhost:8080/public/build/vendor.js"></script>
+<!--<script type="text/javascript" src="/node_modules/react/dist/react.js"></script>-->
 <!--Import jQuery before materialize.js-->
-<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="/public/lib/materialize-css/dist/js/materialize.min.js"></script>
+<!--<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>-->
+<!--<script type="text/javascript" src="/node_modules/materialize-css/dist/js/materialize.min.js"></script>-->
 
-<header>
+<header class="navbar-fixed">
     <nav class="teal" role="navigation">
         <div class="nav-wrapper container">
             <a id="logo-container" href="/" class="brand-logo">
@@ -31,8 +34,8 @@
 
             <ul class="right hide-on-med-and-down">
                 <li>
-                    <a class="waves-effect  btn yellow darken-4">Sign up</a>
-                    <a class="waves-effect waves-light btn">Sign in</a>
+                    <a href="/signup" class="waves-effect  btn yellow darken-4">Sign up</a>
+                    <a href="/signin" class="waves-effect waves-light btn">Sign in</a>
                 </li>
             </ul>
 
@@ -45,10 +48,10 @@
                         <img src="/public/img/logo.png" class="brand-logo_img">
                     </a></li>
                 <li class="bold">
-                    <a href="#" class="waves-effect waves-teal">Sign Up</a>
+                    <a href="/signup" class="waves-effect waves-teal">Sign Up</a>
                 </li>
                 <li class="bold">
-                    <a href="#" class="waves-effect waves-teal">Sign In</a>
+                    <a href="/signin" class="waves-effect waves-teal">Sign In</a>
                 </li>
             </ul>
         </div>

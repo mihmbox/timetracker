@@ -46,11 +46,33 @@ nav ul li:hover, nav ul li.active {
 }
 /* END header */
 
-/* SignUp form */
-.tt-signupform label {
+/* Footer */
+footer.page-footer {
+    padding-top: 0;
+}
+/* END Footer */
+
+
+/* SignUp Page */
+#signup-app {
+    margin-top: 50px;
+}
+/* END SignUp Page */
+/* SignUpForm */
+.SignUpForm_header {
+    margin: 0;
+    padding: 10px 20px;
+    font-size: 1.5em;
+}
+.SignUpForm_form {
+    border: 1px solid #d8dee2;
+    border-top: none;
+}
+.SignUpForm_form label {
     width: 100%;
 }
-.row .tt-signupform.col {
+.SignUpForm_form.col {
     padding: 20px;
 }
-/* END SignUp form */
+
+/* END SignUpForm */

@@ -38,9 +38,10 @@ func main() {
 	// Build routes and start webApp
 	router := mux.NewRouter()
 	// Routes
-	routes.Init(router)
+	routes.InitRoutes(router)
 	// Static files
 	router.PathPrefix("/public/").Handler(getStaticFilesHandler())
+	router.PathPrefix("/node_modules/").Handler(http.StripPrefix("/node_modules/", http.FileServer(http.Dir("node_modules/"))))
 	// 404 handler
 	router.NotFoundHandler = middleware.NotFound()
 

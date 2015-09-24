@@ -4,10 +4,14 @@
   "description": "Time tracker application.",
   "main": "index.js",
   "dependencies": {
+    "hammerjs": "^2.0.4",
+    "jquery": "^2.1.4",
     "materialize-css": "^0.97.1",
     "react": "^0.13.3"
   },
   "devDependencies": {
+    "babel-core": "^5.8.25",
+    "babel-loader": "^5.3.2",
     "webpack": "^1.12.2"
   },
   "repository": {

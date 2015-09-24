@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"app"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strings"
@@ -10,14 +9,16 @@ import (
 // Home page Controller
 func Home(w http.ResponseWriter, r *http.Request) {
 	data := struct{ Title string }{"Home page"}
-
-	err := app.App.Template.ExecuteTemplate(w, "index", data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	ExecuteTemplate(w, "index", data)
 }
 
-// SighIn Controller
+func SignupPage(w http.ResponseWriter, r *http.Request) {
+	ExecuteTemplate(w, "signup", nil)
+}
+func SigninPage(w http.ResponseWriter, r *http.Request) {
+	ExecuteTemplate(w, "signin", nil)
+}
+
 func Signin(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	email, ok := vars["email"]
