@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import SignInForm from './components/SignUpForm.jsx';
+import SignInForm from './components/SignInForm.jsx';
 
 React.render(<SignInForm showHeader={false} />, document.getElementById('signin-form'));
 
