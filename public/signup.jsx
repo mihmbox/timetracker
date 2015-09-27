@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import SignUpForm from './components/SignUpForm.jsx';
+import SignUpForm from './components/SignInForm.jsx';
 
 React.render(
     (

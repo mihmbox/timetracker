@@ -1,15 +1,15 @@
 import React from 'react';
 
-export default class SignUpForm extends React.Component {
+export default class SignInForm extends React.Component {
     render() {
         return (
-            <div className="SignUpForm">
+            <div className="SignInForm">
                 {this.props.showHeader && (
                     <div>
-                        <div className="SignUpForm_header card-panel teal white-text"><span>Sign Up</span></div>
+                        <div className="SignInForm_header card-panel teal white-text"><span>Sign Up</span></div>
                     </div>
                 )}
-                <form className="SignUpForm_form col s12 white" method="post" action="/signup">
+                <form className="SignInForm_form col s12 white" method="post" action="/SignIn">
                     <div className="row">
                         <div className="input-field col s12">
                             <input id="email" type="email" className="validate"/>
@@ -33,9 +33,9 @@ export default class SignUpForm extends React.Component {
         );
     }
 }
-SignUpForm.defaultProps = {
+SignInForm.defaultProps = {
     showHeader: true
 };
-SignUpForm.propTypes = {
+SignInForm.propTypes = {
     showHeader: React.PropTypes.bool
 };

@@ -54,25 +54,25 @@ footer.page-footer {
 
 
 /* SignUp Page */
-#signup-app {
-    margin-top: 50px;
-}
+/*#signup-app {*/
+    /*margin-top: 50px;*/
+/*}*/
 /* END SignUp Page */
-/* SignUpForm */
-.SignUpForm_header {
+/* SignInForm */
+.SignInForm_header {
     margin: 0;
     padding: 10px 20px;
     font-size: 1.5em;
 }
-.SignUpForm_form {
+.SignInForm_form {
     border: 1px solid #d8dee2;
     border-top: none;
 }
-.SignUpForm_form label {
+.SignInForm_form label {
     width: 100%;
 }
-.SignUpForm_form.col {
+.SignInForm_form.col {
     padding: 20px;
 }
 
-/* END SignUpForm */
+/* END SignInForm */
