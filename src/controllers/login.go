@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"github.com/gorilla/mux"
+	"golang.org/x/crypto/bcrypt"
+	"middleware"
+	"model"
 	"net/http"
-	"strings"
 )
 
 // Home page Controller
@@ -20,11 +22,17 @@ func SigninPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func Signin(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	email, ok := vars["email"]
-	if ok && strings.Index(email, "@") < 0 {
-		http.Redirect(w, r, "/", 302)
-	}
+	_, err := middleware.AuthenticateUser(w, r)
+	if err != nil {
+		// authentification failed, redirect to sign-in page
+		http.Redirect(w, r, "/signin", http.StatusUnauthorized)
+	} else {
+		vars := mux.Vars(r)
+		targetUrl := vars["p"]
+		if len(targetUrl) == 0 {
+			targetUrl = "/dashboard"
+		}
 
-	w.Write([]byte(email))
+		http.Redirect(w, r, targetUrl, 302)
+	}
 }

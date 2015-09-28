@@ -6,11 +6,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-//const (
-//	CONNECTION_STRING = "host=localhost port=5432 user=postgres password=root dbname=TimeTrack sslmode=disable"
-//	DB_DIALECT = "postgres"
-//)
-
 func GetConnection() (gorm.DB, error) {
 	cfg := app.App.Config.Db
 	return gorm.Open(cfg.Dialect, cfg.ConnectionString)

@@ -6,7 +6,7 @@ export default class SignInForm extends React.Component {
             <div className="SignInForm">
                 {this.props.showHeader && (
                     <div>
-                        <div className="SignInForm_header card-panel teal white-text"><span>Sign Up</span></div>
+                        <div className="SignInForm_header card-panel teal white-text"><span>Sign In</span></div>
                     </div>
                 )}
                 <form className="SignInForm_form col s12 white" method="post" action="/SignIn">
@@ -26,7 +26,7 @@ export default class SignInForm extends React.Component {
                         </div>
                     </div>
                     <div className="row">
-                        <button type="submit" className="waves-effect  btn yellow darken-4 col l12">Sign up</button>
+                        <button type="submit" className="waves-effect  btn yellow darken-4 col l12">Sign in</button>
                     </div>
                 </form>
             </div>

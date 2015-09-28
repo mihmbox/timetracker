@@ -11,6 +11,7 @@ type Config struct {
 	Server struct {
 		Port        int
 		Templates   string
+		SessionKey  string
 		AssetsProxy string
 	}
 	Db struct {
