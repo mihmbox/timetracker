@@ -16,7 +16,7 @@ type Application struct {
 	Config       Config
 	Router       *mux.Router
 	Template     *template.Template
-	sessionStore sessions.CookieStore
+	sessionStore *sessions.CookieStore
 }
 
 var App *Application
@@ -35,7 +35,7 @@ func Init() {
 	}
 
 	App.sessionStore = sessions.NewCookieStore([]byte(App.Config.Server.SessionKey))
-	//	App.SessionStore.Options = &sessions.Options{
+	//	App.SessionStore.Options = &session.Options{
 	//		Path:     "/",
 	//		MaxAge:   60*30, // 30 minutes
 	//		Secure:   true,

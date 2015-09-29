@@ -2,9 +2,8 @@ package controllers
 
 import (
 	"github.com/gorilla/mux"
-	"golang.org/x/crypto/bcrypt"
+	"logger"
 	"middleware"
-	"model"
 	"net/http"
 )
 
@@ -22,13 +21,14 @@ func SigninPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func Signin(w http.ResponseWriter, r *http.Request) {
-	_, err := middleware.AuthenticateUser(w, r)
+	_, err := middleware.AuthentificateUser(w, r)
 	if err != nil {
-		// authentification failed, redirect to sign-in page
-		http.Redirect(w, r, "/signin", http.StatusUnauthorized)
+		// Authentication failed, redirect to sign-in page
+		logger.Info.Println("Authentification failed. Redirect to ", r.RequestURI)
+		http.Redirect(w, r, r.Referer(), 302)
 	} else {
 		vars := mux.Vars(r)
-		targetUrl := vars["p"]
+		targetUrl := vars["r"]
 		if len(targetUrl) == 0 {
 			targetUrl = "/dashboard"
 		}

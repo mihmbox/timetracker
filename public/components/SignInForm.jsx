@@ -9,12 +9,12 @@ export default class SignInForm extends React.Component {
                         <div className="SignInForm_header card-panel teal white-text"><span>Sign In</span></div>
                     </div>
                 )}
-                <form className="SignInForm_form col s12 white" method="post" action="/SignIn">
+                <form className="SignInForm_form col s12 white" method="post" action="/signin">
                     <div className="row">
                         <div className="input-field col s12">
                             <input id="email" type="email" className="validate"/>
                             <label for="email" data-error="Email is invalid or already taken"
-                                   data-success="right">Email</label>
+                                   data-success="Right">Email</label>
                         </div>
                     </div>
                     <div className="row">
@@ -22,7 +22,7 @@ export default class SignInForm extends React.Component {
                             <input id="password" type="password" className="validate"/>
                             <label for="password"
                                    data-error="Password can't be blank and is too short (minimum is 7 characters)"
-                                   data-success="right">Password</label>
+                                   data-success="Right">Password</label>
                         </div>
                     </div>
                     <div className="row">

@@ -49,7 +49,7 @@ func main() {
 	// Logging
 	handler = handlers.LoggingHandler(os.Stdout, handler)
 	// Authorization middleware
-	handler = middleware.AuthMiddleware(handler)
+	handler = middleware.AuthMiddleware(handler, "/dashboard")
 	// liveReload for Templates
 	if app.App.Config.Env.DevMode {
 		handler = middleware.ReloadTemplates(handler)

@@ -5,7 +5,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const NotFoundByEmailError = errors.New("User not found by email")
+var NotFoundByEmailError = errors.New("User not found by email")
 
 // Get User by email from DB
 func (user *User) LoadByEmail(email string) error {
@@ -30,4 +30,5 @@ func (user *User) HashPassword(password string) error {
 	}
 
 	user.Password = hpass
+	return nil
 }

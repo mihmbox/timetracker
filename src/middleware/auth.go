@@ -1,35 +1,42 @@
 package middleware
 
 import (
-	"app"
+	"app/session"
 	"errors"
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
 	"logger"
 	"model"
 	"net/http"
+	"strings"
 )
 
 var CredentialsIncorrectError = errors.New("Username and/or password incorrect.")
 
 // Authorization middleware.
 // Redirects to sign-in screen if user is not authorized.
-func AuthMiddleware(h http.Handler) http.Handler {
+func AuthMiddleware(h http.Handler, prefix string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		logger.Info.Println("Authorization middleware", r.URL)
+		// Skip authorization
+		if !strings.HasPrefix(r.RequestURI, prefix) {
+			h.ServeHTTP(w, r)
+			return
+		}
 
-		user, err := app.GetUserFromSession(r)
+		logger.Info.Println("Authorization middleware", r.RequestURI)
+		user, err := session.GetUserFromSession(r)
 		if err != nil {
 			// can't get Session. Log and redirect to Sign-in page
-			logger.Error.Print("Cannot get user from session: " + err)
-			http.Redirect(w, r, "/signin", 302)
-			return
+			logger.Error.Print("Cannot get user from session: " + err.Error() + user.Email)
 		}
-		if len(user.Email) == 0 {
+
+		if err != nil || len(user.Email) == 0 {
 			// User is not logged in -> redirect to Sign-In page
-			http.Redirect(w, r, "/signin", 302)
+			http.Redirect(w, r, "/signin?r="+r.RequestURI, 302)
 			return
 		}
+
+		logger.Info.Println("User id= ", user.ID)
 
 		// User is authenticated
 		h.ServeHTTP(w, r)
@@ -38,7 +45,9 @@ func AuthMiddleware(h http.Handler) http.Handler {
 
 // AuthenticateUser authenticates a user against the database.
 // It populates the session with a user ID to allow middleware to check future requests against the database.
-func AuthenticateUser(w http.ResponseWriter, r *http.Request) (int, error) {
+func AuthentificateUser(w http.ResponseWriter, r *http.Request) (int, error) {
+	logger.Info.Print("Trying to Authentificate User")
+
 	vars := mux.Vars(r)
 	email, _ := vars["email"]
 	password, _ := vars["password"]
@@ -71,7 +80,7 @@ func AuthenticateUser(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusBadRequest, err
 	}
 
-	err = app.SaveUserInSession(w, r, user)
+	err = session.SaveUserInSession(w, r, user)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
