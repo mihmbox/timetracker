@@ -46,10 +46,13 @@ func main() {
 	router.NotFoundHandler = middleware.NotFound()
 
 	var handler http.Handler = router
-	// Logging
-	handler = handlers.LoggingHandler(os.Stdout, handler)
 	// Authorization web.middleware
 	handler = middleware.AuthMiddleware(handler, "/dashboard")
+	// Logging
+	handler = handlers.LoggingHandler(os.Stdout, handler)
+	// Panic recovery
+	handler = middleware.PanicRecovery(handler)
+
 	// liveReload for Templates
 	if app.App.Config.Env.DevMode {
 		handler = middleware.ReloadTemplates(handler)
