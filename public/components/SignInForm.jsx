@@ -1,6 +1,13 @@
 import React from 'react';
 
 export default class SignInForm extends React.Component {
+    //constructor(props) {
+    //    super(props);
+    //    this.state = {
+    //        isFormValid: false
+    //    };
+    //}
+
     render() {
         return (
             <div className="SignInForm">
@@ -12,9 +19,8 @@ export default class SignInForm extends React.Component {
                 <form className="SignInForm_form col s12 white" method="post" action="/signin">
                     <div className="row">
                         <div className="input-field col s12">
-                            <input id="email" type="email" className="validate"/>
-                            <label for="email" data-error="Email is invalid or already taken"
-                                   data-success="Right">Email</label>
+                            <input id="email" type="email" className="validate" />
+                            <label for="email" data-error="Email is invalid or already taken" data-success="Right">Email</label>
                         </div>
                     </div>
                     <div className="row">
@@ -25,8 +31,15 @@ export default class SignInForm extends React.Component {
                                    data-success="Right">Password</label>
                         </div>
                     </div>
+                    {this.props.loginFailed && (
+                        <div className="row SignInForm_failed red-text">
+                            <span>Incorrect email or password.</span>
+                        </div>
+                    )}
                     <div className="row">
-                        <button type="submit" className="waves-effect  btn yellow darken-4 col l12">Sign in</button>
+                        <button type="submit" className="waves-effect  btn yellow darken-4 col l12">
+                            Sign in
+                        </button>
                     </div>
                 </form>
             </div>
@@ -34,8 +47,10 @@ export default class SignInForm extends React.Component {
     }
 }
 SignInForm.defaultProps = {
-    showHeader: true
+    showHeader: true,
+    loginFailed: false
 };
 SignInForm.propTypes = {
-    showHeader: React.PropTypes.bool
+    showHeader: React.PropTypes.bool,
+    loginFailed: React.PropTypes.bool
 };

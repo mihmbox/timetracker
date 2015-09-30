@@ -2,6 +2,12 @@
 {{ template "header"}}
 
 <main>
+    <script>
+        var SigninAppData = {
+            failed: {{.Failed}},
+            error: '{{.Error}}'
+        };
+    </script>
     <div id="SigninApp"></div>
 </main>
 

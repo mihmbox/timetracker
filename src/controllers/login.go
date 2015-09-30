@@ -3,8 +3,10 @@ package controllers
 import (
 	"github.com/gorilla/mux"
 	"logger"
-	"middleware"
 	"net/http"
+	"strconv"
+	"web/middleware"
+	"web/session"
 )
 
 // Home page Controller
@@ -17,7 +19,22 @@ func SignupPage(w http.ResponseWriter, r *http.Request) {
 	ExecuteTemplate(w, "signup", nil)
 }
 func SigninPage(w http.ResponseWriter, r *http.Request) {
-	ExecuteTemplate(w, "signin", nil)
+	logger.Info.Println("SigninPage ")
+	data := struct {
+		Error  string
+		Failed bool
+	}{"", false}
+
+	session, _ := sessions.GetSession(r)
+	if errors := session.Flashes(); len(errors) > 0 {
+		logger.Info.Println("Flashes count: ", strconv.Itoa(len(errors)))
+		session.Save(r, w)
+		// there is error flash
+		data.Failed = true
+		data.Error = errors[0].(string)
+	}
+
+	ExecuteTemplate(w, "signin", data)
 }
 
 func Signin(w http.ResponseWriter, r *http.Request) {
@@ -25,6 +42,11 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Authentication failed, redirect to sign-in page
 		logger.Info.Println("Authentification failed. Redirect to ", r.RequestURI)
+
+		session, _ := sessions.GetSession(r)
+		session.AddFlash(err.Error())
+		session.Save(r, w)
+
 		http.Redirect(w, r, r.Referer(), 302)
 	} else {
 		vars := mux.Vars(r)

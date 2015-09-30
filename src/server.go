@@ -8,11 +8,11 @@ import (
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"logger"
-	"middleware"
 	"model"
 	"net/http"
 	"os"
 	"routes"
+	"web/middleware"
 )
 
 func init() {
@@ -48,7 +48,7 @@ func main() {
 	var handler http.Handler = router
 	// Logging
 	handler = handlers.LoggingHandler(os.Stdout, handler)
-	// Authorization middleware
+	// Authorization web.middleware
 	handler = middleware.AuthMiddleware(handler, "/dashboard")
 	// liveReload for Templates
 	if app.App.Config.Env.DevMode {

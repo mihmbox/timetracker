@@ -1,14 +1,22 @@
-package session
+package sessions
 
 import (
 	"app"
+	"code.google.com/p/gorilla/sessions"
 	"logger"
 	"model"
 	"net/http"
 )
 
+const userSessionKey = "timetracker-user"
+
+// Get Session
+func GetSession(r *http.Request) (*sessions.Session, error) {
+	return app.App.SessionStore.Get(r, "timetracker-user")
+}
+
 func GetUserFromSession(r *http.Request) (*model.User, error) {
-	session, err := app.App.GetSession(r)
+	session, err := GetSession(r)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +40,7 @@ func GetUserFromSession(r *http.Request) (*model.User, error) {
 }
 
 func SaveUserInSession(w http.ResponseWriter, r *http.Request, user *model.User) error {
-	session, err := app.App.GetSession(r)
+	session, err := GetSession(r)
 	if err != nil {
 		return err
 	}

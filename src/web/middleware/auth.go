@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"app/session"
 	"errors"
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
@@ -9,11 +8,12 @@ import (
 	"model"
 	"net/http"
 	"strings"
+	"web/session"
 )
 
 var CredentialsIncorrectError = errors.New("Username and/or password incorrect.")
 
-// Authorization middleware.
+// Authorization web.middleware.
 // Redirects to sign-in screen if user is not authorized.
 func AuthMiddleware(h http.Handler, prefix string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -23,8 +23,8 @@ func AuthMiddleware(h http.Handler, prefix string) http.Handler {
 			return
 		}
 
-		logger.Info.Println("Authorization middleware", r.RequestURI)
-		user, err := session.GetUserFromSession(r)
+		logger.Info.Println("Authorization web.middleware", r.RequestURI)
+		user, err := sessions.GetUserFromSession(r)
 		if err != nil {
 			// can't get Session. Log and redirect to Sign-in page
 			logger.Error.Print("Cannot get user from session: " + err.Error() + user.Email)
@@ -44,7 +44,7 @@ func AuthMiddleware(h http.Handler, prefix string) http.Handler {
 }
 
 // AuthenticateUser authenticates a user against the database.
-// It populates the session with a user ID to allow middleware to check future requests against the database.
+// It populates the session with a user ID to allow web.middleware to check future requests against the database.
 func AuthentificateUser(w http.ResponseWriter, r *http.Request) (int, error) {
 	logger.Info.Print("Trying to Authentificate User")
 
@@ -55,6 +55,8 @@ func AuthentificateUser(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusBadRequest, CredentialsIncorrectError
 	}
 
+	logger.Info.Printf("User email: %v, password: %v", email, password)
+
 	user := &model.User{}
 	err := user.LoadByEmail(email)
 	if err != nil {
@@ -63,14 +65,6 @@ func AuthentificateUser(w http.ResponseWriter, r *http.Request) (int, error) {
 
 	// Re-direct back to the login page if the user does not exist
 	if len(user.Email) == 0 {
-		//		// Save error in session flash
-		//		session.AddFlash(ErrCredentialsIncorrect, "_errors")
-		//		err := session.Save(r, w)
-		//		if err != nil {
-		//			return 500, err
-		//		}
-		//		http.Redirect(w, r, loginURL, 302)
-		//		return 302, err
 		return http.StatusBadRequest, err
 	}
 
@@ -80,7 +74,7 @@ func AuthentificateUser(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusBadRequest, err
 	}
 
-	err = session.SaveUserInSession(w, r, user)
+	err = sessions.SaveUserInSession(w, r, user)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}

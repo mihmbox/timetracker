@@ -6,7 +6,6 @@ import (
 	"github.com/gorilla/mux"
 	"html/template"
 	"logger"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -16,7 +15,7 @@ type Application struct {
 	Config       Config
 	Router       *mux.Router
 	Template     *template.Template
-	sessionStore *sessions.CookieStore
+	SessionStore *sessions.CookieStore
 }
 
 var App *Application
@@ -34,7 +33,7 @@ func Init() {
 		panic("Can not load templates")
 	}
 
-	App.sessionStore = sessions.NewCookieStore([]byte(App.Config.Server.SessionKey))
+	App.SessionStore = sessions.NewCookieStore([]byte(App.Config.Server.SessionKey))
 	//	App.SessionStore.Options = &session.Options{
 	//		Path:     "/",
 	//		MaxAge:   60*30, // 30 minutes
@@ -78,11 +77,4 @@ func (app *Application) LoadTemplates() error {
 	app.Template = template.Must(tmpl, err)
 
 	return nil
-}
-
-var userSessionKey = "timetracker-user"
-
-// Get Session
-func (app *Application) GetSession(r *http.Request) (*sessions.Session, error) {
-	return app.sessionStore.Get(r, "timetracker-user")
 }
