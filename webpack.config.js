@@ -25,9 +25,10 @@ var getEntryPath = function (name) {
 };
 
 module.exports = {
-    debug: true,
     entry: {
-        'home': [getEntryPath('Home.jsx')],
+        'home': [getEntryPath('home.jsx')],
+        'signin': [getEntryPath('signin.jsx')],
+        'signup': [getEntryPath('signup.jsx')],
         'vendor': [
             'webpack/hot/dev-server',
             'webpack-dev-server/client?http://localhost:8080'
