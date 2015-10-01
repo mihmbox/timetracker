@@ -20,15 +20,13 @@ export default class SignInForm extends React.Component {
                     <div className="row">
                         <div className="input-field col s12">
                             <input id="email" type="email" className="validate" />
-                            <label for="email" data-error="Email is invalid or already taken" data-success="Right">Email</label>
+                            <label for="email" data-error="Email is invalid" data-success="Right">Email</label>
                         </div>
                     </div>
                     <div className="row">
                         <div className="input-field col s12">
                             <input id="password" type="password" className="validate"/>
-                            <label for="password"
-                                   data-error="Password can't be blank and is too short (minimum is 7 characters)"
-                                   data-success="Right">Password</label>
+                            <label for="password">Password</label>
                         </div>
                     </div>
                     {this.props.loginFailed && (

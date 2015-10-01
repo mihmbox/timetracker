@@ -56,7 +56,7 @@ module.exports = {
     module: {
         loaders: [{
             test: /\.jsx?$/, // A regexp to test the require path. accepts either js or jsx
-            loader: 'babel', // The module to load. "babel" is short for "babel-loader"
+            loader: 'babel?optional[]=runtime&stage=0', // The module to load. "babel" is short for "babel-loader"
             exclude: /node_modules/
         }],
         // Scripts without any dependencies(any dependencies will be ignored during processing)

@@ -4,6 +4,7 @@ import (
 	"app"
 	"logger"
 	"net/http"
+"strings"
 )
 
 // Resource not found web.middleware.
@@ -11,7 +12,9 @@ import (
 func NotFound() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logger.Info.Println("NotFound web.middleware", r.URL)
-		app.App.Template.ExecuteTemplate(w, "404", nil)
-		// h.ServeHTTP(w, r)
+		if !strings.HasPrefix(r.RequestURI, "/api/") {
+			// Don't return 404 page if it's API method
+			app.App.Template.ExecuteTemplate(w, "404", nil)
+		}
 	})
 }

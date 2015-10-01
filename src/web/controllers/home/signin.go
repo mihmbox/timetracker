@@ -1,4 +1,4 @@
-package controllers
+package home
 
 import (
 	"github.com/gorilla/mux"
@@ -7,17 +7,8 @@ import (
 	"strconv"
 	"web/middleware"
 	"web/session"
+	"web/controllers"
 )
-
-// Home page Controller
-func Home(w http.ResponseWriter, r *http.Request) {
-	data := struct{ Title string }{"Home page"}
-	ExecuteTemplate(w, "index", data)
-}
-
-func SignupPage(w http.ResponseWriter, r *http.Request) {
-	ExecuteTemplate(w, "signup", nil)
-}
 func SigninPage(w http.ResponseWriter, r *http.Request) {
 	logger.Info.Println("SigninPage ")
 	data := struct {
@@ -34,7 +25,7 @@ func SigninPage(w http.ResponseWriter, r *http.Request) {
 		data.Error = errors[0].(string)
 	}
 
-	ExecuteTemplate(w, "signin", data)
+	controllers.ExecuteTemplate(w, "signin", data)
 }
 
 func Signin(w http.ResponseWriter, r *http.Request) {

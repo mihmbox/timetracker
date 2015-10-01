@@ -11,7 +11,7 @@ import (
 	"model"
 	"net/http"
 	"os"
-	"routes"
+	"web/routes"
 	"web/middleware"
 )
 
@@ -35,7 +35,7 @@ func main() {
 		}
 	}
 
-	// Build routes and start webApp
+	// Build web.routes and start webApp
 	router := mux.NewRouter()
 	// Routes
 	routes.InitRoutes(router)
