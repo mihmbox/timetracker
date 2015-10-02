@@ -8,11 +8,11 @@ import (
 	"net/http"
 )
 
-const userSessionKey = "timetracker-user"
+const authSessionKey = "auth"
 
 // Get Session
 func GetSession(r *http.Request) (*sessions.Session, error) {
-	return app.App.SessionStore.Get(r, "timetracker-user")
+	return app.App.SessionStore.Get(r, authSessionKey)
 }
 
 func GetUserFromSession(r *http.Request) (*model.User, error) {

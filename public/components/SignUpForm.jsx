@@ -53,7 +53,7 @@ export default class SignUpForm extends React.Component {
                 <form className="SignUpForm_form col s12 white" method="post" action="/signup">
                     <div className="row">
                         <div className="input-field col s12">
-                            <input id="email" type="email"
+                            <input id="email" name="email" type="email"
                                    className={"validate " +  (!this.state.isEmailValid && 'invalid')}
                                    onChange={this.validateEmail} ref="email"/>
                             <label for="email" data-error="Email is invalid or already taken"
@@ -63,7 +63,7 @@ export default class SignUpForm extends React.Component {
                     </div>
                     <div className="row">
                         <div className="input-field col s12">
-                            <input id="password" type="password" className="validate"/>
+                            <input id="password" name="password" type="password" className="validate"/>
                             <label for="password"
                                    data-error="Password can't be blank and is too short (minimum is 7 characters)"
                                    data-success="Correct">Password</label>
@@ -71,7 +71,7 @@ export default class SignUpForm extends React.Component {
                     </div>
                     <div className="row">
                         <div className="input-field col s12">
-                            <input id="password-confirm" type="password" className="validate"/>
+                            <input id="password-confirm" name="passwordconfirm" type="password" className="validate"/>
                             <label for="password-confirm"
                                    data-error="Passwords don't match"
                                    data-success="Correct">Confirm password</label>

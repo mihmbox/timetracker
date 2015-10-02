@@ -1,16 +1,15 @@
 package home
 
 import (
-	"github.com/gorilla/mux"
 	"logger"
 	"net/http"
 	"strconv"
-	"web/middleware"
 	"web/session"
 	"web/controllers"
+	"web/authorization"
+	"model"
 )
 func SigninPage(w http.ResponseWriter, r *http.Request) {
-	logger.Info.Println("SigninPage ")
 	data := struct {
 		Error  string
 		Failed bool
@@ -29,19 +28,22 @@ func SigninPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func Signin(w http.ResponseWriter, r *http.Request) {
-	_, err := middleware.AuthentificateUser(w, r)
+	user := &model.User{
+		Email: r.FormValue("email"),
+		Password: []byte(r.FormValue("password")),
+	}
+	err := authorization.AuthorizeUser(w, r, user)
 	if err != nil {
-		// Authentication failed, redirect to sign-in page
-		logger.Info.Println("Authentification failed. Redirect to ", r.RequestURI)
+		// Authentication failed
+		logger.Info.Printf("Authentification failed. Error: %+v", err)
 
 		session, _ := sessions.GetSession(r)
-		session.AddFlash(err.Error())
+		session.AddFlash(err.Error.Error())
 		session.Save(r, w)
 
 		http.Redirect(w, r, r.Referer(), 302)
 	} else {
-		vars := mux.Vars(r)
-		targetUrl := vars["r"]
+		targetUrl := r.FormValue("r")
 		if len(targetUrl) == 0 {
 			targetUrl = "/dashboard"
 		}

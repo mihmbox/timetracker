@@ -19,13 +19,13 @@ export default class SignInForm extends React.Component {
                 <form className="SignInForm_form col s12 white" method="post" action="/signin">
                     <div className="row">
                         <div className="input-field col s12">
-                            <input id="email" type="email" className="validate" />
+                            <input id="email" type="email" name="email" className="validate" />
                             <label for="email" data-error="Email is invalid" data-success="Right">Email</label>
                         </div>
                     </div>
                     <div className="row">
                         <div className="input-field col s12">
-                            <input id="password" type="password" className="validate"/>
+                            <input id="password" type="password" name="password" className="validate"/>
                             <label for="password">Password</label>
                         </div>
                     </div>

@@ -2,6 +2,12 @@
 {{ template "header"}}
 
 <main>
+    <script>
+        var SignupAppData = {
+            email: '{{.User.Email}}',
+            errorCode: {{.ErrorCode}}
+        };
+    </script>
     <div id="SignupApp"></div>
 </main>
 

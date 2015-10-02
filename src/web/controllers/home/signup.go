@@ -4,10 +4,66 @@ import (
 	"net/http"
 	"web/controllers"
 	"github.com/gorilla/mux"
+	"logger"
+	"web/session"
+	"web/authorization"
+	"model"
+	"github.com/gorilla/context"
 )
 
+var (
+	EmailExistsOrInvalidErrorCode = 1
+	PasswordsDontMatchErrorCode = 2
+)
+// Shows Signup oag
 func SignupPage(w http.ResponseWriter, r *http.Request) {
-	controllers.ExecuteTemplate(w, "signup", nil)
+	data := struct {
+		User      model.User
+		ErrorCode int
+	}{model.User{}, 0}
+
+	if userObj, ok := context.GetOk(r, "user"); ok{
+		data.User, _ = userObj.(model.User)
+	}
+
+	session, _ := sessions.GetSession(r)
+	if errors := session.Flashes(); len(errors) > 0 {
+		session.Save(r, w)
+		data.ErrorCode = EmailExistsOrInvalidErrorCode
+		if errCode, ok := errors[0].(int); ok {
+			data.ErrorCode = errCode
+		}
+	}
+
+	controllers.ExecuteTemplate(w, "signup", data)
+}
+
+// Executes SignUp logic
+func Signup(w http.ResponseWriter, r *http.Request) {
+	// vars := mux.Vars(r)
+	user := model.User{
+		Email: r.FormValue("email"),
+		Password: []byte(r.FormValue("password")),
+	}
+	//passwordConfirm := r.FormValue("passwordconfirm")
+
+	//	re := regexp.MustCompile(".+@.+\\..+")
+	//	matched := re.Match([]byte(msg.Email))
+	//	if matched == false {
+	//		msg.Errors["Email"] = "Please enter a valid email address"
+	//	}
+	context.Set(r, "user", user)
+	if err := authorization.RegisterUser(w, r, &user); err != nil {
+		// Registration failed
+		logger.Info.Printf("Registration failed.Error: %+v, user: %+v", err, user)
+		session, _ := sessions.GetSession(r)
+		session.AddFlash(err.Error.Error())
+		session.Save(r, w)
+
+		SignupPage(w, r)
+	} else {
+		http.Redirect(w, r, "/dashboard", 302)
+	}
 }
 
 // Handler for "/api/signup/validate_email/{email}"
@@ -34,43 +90,3 @@ func SignupValidateEmail(w http.ResponseWriter, r *http.Request) {
 	//
 	//	controllers.RespondJSON(w, jsonStr)
 }
-//func SigninPage(w http.ResponseWriter, r *http.Request) {
-//	logger.Info.Println("SigninPage ")
-//	data := struct {
-//		Error  string
-//		Failed bool
-//	}{"", false}
-//
-//	session, _ := sessions.GetSession(r)
-//	if errors := session.Flashes(); len(errors) > 0 {
-//		logger.Info.Println("Flashes count: ", strconv.Itoa(len(errors)))
-//		session.Save(r, w)
-//		// there is error flash
-//		data.Failed = true
-//		data.Error = errors[0].(string)
-//	}
-//
-//	ExecuteTemplate(w, "signin", data)
-//}
-//
-//func Signin(w http.ResponseWriter, r *http.Request) {
-//	_, err := middleware.AuthentificateUser(w, r)
-//	if err != nil {
-//		// Authentication failed, redirect to sign-in page
-//		logger.Info.Println("Authentification failed. Redirect to ", r.RequestURI)
-//
-//		session, _ := sessions.GetSession(r)
-//		session.AddFlash(err.Error())
-//		session.Save(r, w)
-//
-//		http.Redirect(w, r, r.Referer(), 302)
-//	} else {
-//		vars := mux.Vars(r)
-//		targetUrl := vars["r"]
-//		if len(targetUrl) == 0 {
-//			targetUrl = "/dashboard"
-//		}
-//
-//		http.Redirect(w, r, targetUrl, 302)
-//	}
-//}
