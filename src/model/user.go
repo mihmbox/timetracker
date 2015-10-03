@@ -14,9 +14,10 @@ func (user *User) LoadByEmail(email string) error {
 		return err
 	}
 
-	connection.Where(&User{Email: "email"}).First(&user)
+	foundUser := User{}
+	connection.Where(&User{Email: "email"}).First(foundUser)
 	// validate found user Email
-	if len(user.Email) == 0 {
+	if len(foundUser.Email) == 0 {
 		return NotFoundByEmailError
 	}
 

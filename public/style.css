@@ -88,6 +88,14 @@ footer.page-footer {
     right: 0;
     top: 10px;
 }
+.SignUpForm .input-field label:after {
+    font-size: 0.8rem;
+    transform: translateY(-140%);
+}
+
+.SignUpForm .input-field label.active:after {
+    transform: translateY(0%);
+}
 /* END SignUpForm*/
 
 /* END SignInForm, SignUpForm */

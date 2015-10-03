@@ -1,15 +1,30 @@
 import React from 'react';
 import jQuery from 'jquery';
 
+var errorCodes = {
+    EmailExistsOrInvalid: 1,
+    PasswordIsWeak: 2,
+    PasswordsDontMatchErrorCode: 3
+};
 export default class SignUpForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isEmailValid: true,
-            isPasswordValid: true,
-            isPasswordConfirmValid: true
+            isEmailInvalid: this.props.errorCode == 1,
+            isPasswordWeak: this.props.errorCode == 2,
+            isPasswordDoesntMatch: this.props.errorCode == 3
         };
     }
+
+    static defaultProps = {
+        email: '',
+        errorCode: 0
+    };
+
+    static propTypes = {
+        email: React.PropTypes.string,
+        errorCode: React.PropTypes.number
+    };
 
     componentDidMount() {
         //validateForm();
@@ -21,7 +36,7 @@ export default class SignUpForm extends React.Component {
         var el = React.findDOMNode(this.refs.email);
         if (!el.checkValidity()) {
             this.setState({
-                isEmailValid: false
+                isEmailInvalid: true
             });
             return;
         }
@@ -31,19 +46,43 @@ export default class SignUpForm extends React.Component {
                 url: '/api/signup/validate_email/' + el.value
             }).done(() => {
                 this.setState({
-                    isEmailValid: true
+                    isEmailInvalid: false
                 });
             }).fail(() => {
                 this.setState({
-                    isEmailValid: false
+                    isEmailInvalid: true
                 });
             });
         }, 700);
     };
 
+    validatePassword = () => {
+        var password = React.findDOMNode(this.refs.password).value.trim();
+        this.setState({
+            isPasswordWeak: password.length < 6
+        });
+        this.comparePasswords();
+    };
+
+    comparePasswords = () => {
+        var password = React.findDOMNode(this.refs.password).value.trim();
+        var passwordConfirm = React.findDOMNode(this.refs.passwordConfirm).value.trim();
+        this.setState({
+            isPasswordDoesntMatch: password != passwordConfirm
+        });
+    };
+
+    // Focuses on specified ref element
+    focus = (ref) => {
+        var _this = this;
+        return function(e) {
+            React.findDOMNode(_this.refs[ref]).focus();
+        }
+    };
+
     render() {
         var errorIcon = <i className="SignUpForm_erroricon material-icons prefix red-text">warning</i>;
-        //<i className="SignUpForm_okicon material-icons prefix active">done</i>
+
         return (
             <div className="SignUpForm" ref="test">
                 <div>
@@ -54,27 +93,42 @@ export default class SignUpForm extends React.Component {
                     <div className="row">
                         <div className="input-field col s12">
                             <input id="email" name="email" type="email"
-                                   className={"validate " +  (!this.state.isEmailValid && 'invalid')}
-                                   onChange={this.validateEmail} ref="email"/>
-                            <label for="email" data-error="Email is invalid or already taken"
+                                   className={"novalidate " +  (this.state.isEmailInvalid ? 'invalid' : '')}
+                                   defaultValue={this.props.email}
+                                   onChange={this.validateEmail}
+                                   ref="email"/>
+                            <label for="email"
+                                   onClick={this.focus('email')}
+                                   data-error="Email is invalid or already taken"
                                    data-success="Right">Email</label>
-                            {!this.state.isEmailValid && errorIcon}
+                            {this.state.isEmailInvalid && errorIcon}
                         </div>
                     </div>
                     <div className="row">
                         <div className="input-field col s12">
-                            <input id="password" name="password" type="password" className="validate"/>
+                            <input id="password" name="password" type="password"
+                                   className={"novalidate " +  (this.state.isPasswordWeak ? 'invalid': '')}
+                                   ref="password"
+                                   onChange={this.validatePassword}
+                                />
                             <label for="password"
-                                   data-error="Password can't be blank and is too short (minimum is 7 characters)"
-                                   data-success="Correct">Password</label>
+                                   onClick={this.focus('password')}
+                                   data-error="Password is weak (minimum is 6 characters)"
+                                   data-success="">Password</label>
+                            {this.state.isPasswordWeak && errorIcon}
                         </div>
                     </div>
                     <div className="row">
                         <div className="input-field col s12">
-                            <input id="password-confirm" name="passwordconfirm" type="password" className="validate"/>
+                            <input id="password-confirm" name="passwordconfirm" type="password"
+                                   className={"novalidate " +  (this.state.isPasswordDoesntMatch ? 'invalid': '')}
+                                   ref="passwordConfirm"
+                                   onChange={this.comparePasswords}/>
                             <label for="password-confirm"
-                                   data-error="Passwords don't match"
-                                   data-success="Correct">Confirm password</label>
+                                   onClick={this.focus('passwordConfirm')}
+                                   data-error="Password doesn't match"
+                                   data-success="">Confirm password</label>
+                            {this.state.isPasswordDoesntMatch && errorIcon}
                         </div>
                     </div>
                     <div className="row">
@@ -87,11 +141,3 @@ export default class SignUpForm extends React.Component {
         );
     }
 }
-SignUpForm.defaultProps = {
-    //showHeader: true,
-    //loginFailed: false
-};
-SignUpForm.propTypes = {
-    //showHeader: React.PropTypes.bool,
-    //loginFailed: React.PropTypes.bool
-};

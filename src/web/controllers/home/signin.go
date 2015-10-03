@@ -11,7 +11,7 @@ import (
 )
 func SigninPage(w http.ResponseWriter, r *http.Request) {
 	data := struct {
-		Error  string
+		Email  string
 		Failed bool
 	}{"", false}
 
@@ -21,7 +21,7 @@ func SigninPage(w http.ResponseWriter, r *http.Request) {
 		session.Save(r, w)
 		// there is error flash
 		data.Failed = true
-		data.Error = errors[0].(string)
+		data.Email = r.FormValue("email")
 	}
 
 	controllers.ExecuteTemplate(w, "signin", data)
@@ -41,7 +41,8 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		session.AddFlash(err.Error.Error())
 		session.Save(r, w)
 
-		http.Redirect(w, r, r.Referer(), 302)
+		SigninPage(w, r)
+		//http.Redirect(w, r, r.Referer(), 302)
 	} else {
 		targetUrl := r.FormValue("r")
 		if len(targetUrl) == 0 {

@@ -9,20 +9,24 @@ import (
 	"web/authorization"
 	"model"
 	"github.com/gorilla/context"
+	"strings"
+	"regexp"
 )
 
 var (
 	EmailExistsOrInvalidErrorCode = 1
-	PasswordsDontMatchErrorCode = 2
+	PasswordIsWeakErrorCode = 2
+	PasswordsDontMatchErrorCode = 3
+	RegistrationInternalServerError = 4
 )
-// Shows Signup oag
+// Shows Signup page.
 func SignupPage(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		User      model.User
 		ErrorCode int
 	}{model.User{}, 0}
 
-	if userObj, ok := context.GetOk(r, "user"); ok{
+	if userObj, ok := context.GetOk(r, "user"); ok {
 		data.User, _ = userObj.(model.User)
 	}
 
@@ -38,45 +42,63 @@ func SignupPage(w http.ResponseWriter, r *http.Request) {
 	controllers.ExecuteTemplate(w, "signup", data)
 }
 
-// Executes SignUp logic
+// Validate user input, register new user and redirects to Dashboard
 func Signup(w http.ResponseWriter, r *http.Request) {
 	// vars := mux.Vars(r)
+	password := strings.TrimSpace(r.FormValue("password"))
+	passwordConfirm := r.FormValue("passwordconfirm")
 	user := model.User{
-		Email: r.FormValue("email"),
-		Password: []byte(r.FormValue("password")),
+		Email: strings.TrimSpace(r.FormValue("email")),
+		Password: []byte(password),
 	}
-	//passwordConfirm := r.FormValue("passwordconfirm")
-
-	//	re := regexp.MustCompile(".+@.+\\..+")
-	//	matched := re.Match([]byte(msg.Email))
-	//	if matched == false {
-	//		msg.Errors["Email"] = "Please enter a valid email address"
-	//	}
+	// Save User in context to use it on Signup page later if registration failed
 	context.Set(r, "user", user)
-	if err := authorization.RegisterUser(w, r, &user); err != nil {
-		// Registration failed
-		logger.Info.Printf("Registration failed.Error: %+v, user: %+v", err, user)
+
+	// Registration failed handler
+	failed := func(errCode int) {
+		logger.Info.Printf("Registration failed.Error: %+v, user: %+v", errCode, user)
 		session, _ := sessions.GetSession(r)
-		session.AddFlash(err.Error.Error())
+		session.AddFlash(errCode)
 		session.Save(r, w)
 
 		SignupPage(w, r)
-	} else {
-		http.Redirect(w, r, "/dashboard", 302)
 	}
+
+	// Validation: email
+	emailIsValid := validateEmail(user.Email) == http.StatusOK;
+	if !emailIsValid {
+		failed(EmailExistsOrInvalidErrorCode)
+		return
+	}
+
+	// Validation: if Password is weak
+	passwordIsWeak := len(password) <= 6
+	if passwordIsWeak {
+		failed(PasswordIsWeakErrorCode)
+		return
+	}
+
+	// Validation: compare passwords
+	passwordsDifferent := password != passwordConfirm
+	if passwordsDifferent {
+		failed(PasswordsDontMatchErrorCode)
+		return
+	}
+
+	if err := authorization.RegisterUser(w, r, &user); err != nil {
+		failed(RegistrationInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/dashboard", 302)
 }
 
 // Handler for "/api/signup/validate_email/{email}"
 func SignupValidateEmail(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	email := vars["email"]
-	isValid := email == "mik@test.com"
 
-	respStatus := http.StatusForbidden
-	if isValid {
-		respStatus = http.StatusOK
-	}
-
+	respStatus := validateEmail(email)
 	w.WriteHeader(respStatus)
 
 	//	responseJson := struct {
@@ -89,4 +111,29 @@ func SignupValidateEmail(w http.ResponseWriter, r *http.Request) {
 	//	}
 	//
 	//	controllers.RespondJSON(w, jsonStr)
+}
+
+// Validate Email. Returns '200' http status Ok if email is valid and available
+func validateEmail(email string) int{
+	var respStatus int
+	// check if string is email
+	re := regexp.MustCompile(".+@.+\\..+")
+	matched := re.Match([]byte(email))
+	if matched == false {
+		respStatus = http.StatusBadRequest
+	}
+
+	// check if email exists in database
+	user := model.User{}
+	if err := user.LoadByEmail(user.Email); err == nil {
+		// user already exists with specified email
+		respStatus = http.StatusForbidden
+	}
+
+	if respStatus <= 0 {
+		// set "Ok" status only if all validation steps passed
+		respStatus = http.StatusOK
+	}
+
+	return respStatus
 }

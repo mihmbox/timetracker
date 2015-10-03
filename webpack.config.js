@@ -49,8 +49,8 @@ module.exports = {
         new webpack.NoErrorsPlugin(), // don't reload if there is an erro
         new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.js"),
         new webpack.ProvidePlugin({
-            $: 'jquery',
-            jQuery: 'jquery'
+            $: "jquery",
+            jQuery: "jquery"
         })
     ],
     module: {

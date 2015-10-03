@@ -53,10 +53,10 @@ func main() {
 	// Panic recovery
 	handler = middleware.PanicRecovery(handler)
 
-	// liveReload for Templates
-	if app.App.Config.Env.DevMode {
-		handler = middleware.ReloadTemplates(handler)
-	}
+	// liveReload for Templates. Put in ExecuteTemplate method
+//	if app.App.Config.Env.DevMode {
+//		handler = middleware.ReloadTemplates(handler)
+//	}
 
 	port := app.App.Config.Server.Port
 	fmt.Println("Listening. Port: ", port)
