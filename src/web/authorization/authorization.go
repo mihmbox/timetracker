@@ -3,7 +3,6 @@ package authorization
 import (
 	"net/http"
 	"web/session"
-	"golang.org/x/crypto/bcrypt"
 	"model"
 	"logger"
 	"errors"
@@ -16,35 +15,31 @@ type AuthorizeError struct {
 
 var CredentialsIncorrectError = errors.New("Username and/or password incorrect.")
 
-// AuthorizeUser authorizes user.
+// Authorize User
+// User password should be plain(not encrypted!) to validate it properly
 // It populates the session with a user ID to allow to check future requests against the database.
 func AuthorizeUser(w http.ResponseWriter, r *http.Request, user *model.User) *AuthorizeError {
-	logger.Info.Print("Trying to Authentificate User")
+	logger.Info.Print("Trying to Authorize User %+v", user)
 
 	if len(user.Email) == 0 || len(user.Password) == 0 {
 		return &AuthorizeError{http.StatusBadRequest, CredentialsIncorrectError}
 	}
 
-	logger.Info.Printf("User email: %v, password: %v", user.Email, user.Password)
-
-	err := user.LoadByEmail(user.Email)
-	if err != nil {
-		return &AuthorizeError{http.StatusInternalServerError, err}
+	dbUser := model.User{
+		Email: user.Email,
 	}
 
-	// Re-direct back to the login page if the user does not exist
-	if len(user.Email) == 0 {
+	if err := dbUser.LoadByEmail(); err != nil {
 		return &AuthorizeError{http.StatusBadRequest, err}
 	}
 
-	// Leverage the bcrypt package's secure comparison.
-	err = bcrypt.CompareHashAndPassword(user.Password, []byte(user.Password))
-	if err != nil {
-		return &AuthorizeError{http.StatusBadRequest, err}
+	// compare password hashes
+	logger.Info.Printf("Authentification User password3. %+v", string(dbUser.Password))
+	if err := dbUser.ValidatePassword(user.Password); err != nil {
+		return &AuthorizeError{http.StatusBadRequest, CredentialsIncorrectError}
 	}
 
-	err = sessions.SaveUserInSession(w, r, user)
-	if err != nil {
+	if err := sessions.SaveUserInSession(w, r, user); err != nil {
 		return &AuthorizeError{http.StatusInternalServerError, err}
 	}
 
@@ -53,5 +48,8 @@ func AuthorizeUser(w http.ResponseWriter, r *http.Request, user *model.User) *Au
 
 // Register new User
 func RegisterUser(w http.ResponseWriter, r *http.Request, user *model.User) *AuthorizeError {
-	return &AuthorizeError{http.StatusInternalServerError, errors.New("No implemented")}
+	if err := user.Store(); err != nil {
+		return &AuthorizeError{http.StatusInternalServerError, err }
+	}
+	return nil;
 }

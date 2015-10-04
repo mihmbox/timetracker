@@ -17,7 +17,8 @@ var (
 	EmailExistsOrInvalidErrorCode = 1
 	PasswordIsWeakErrorCode = 2
 	PasswordsDontMatchErrorCode = 3
-	RegistrationInternalServerError = 4
+	RegistrationInternalServerErrorCode = 4
+	AuthorizationErrorCode = 5
 )
 // Shows Signup page.
 func SignupPage(w http.ResponseWriter, r *http.Request) {
@@ -33,6 +34,7 @@ func SignupPage(w http.ResponseWriter, r *http.Request) {
 	session, _ := sessions.GetSession(r)
 	if errors := session.Flashes(); len(errors) > 0 {
 		session.Save(r, w)
+		logger.Info.Print("Authorization flash errors: %+v", errors)
 		data.ErrorCode = EmailExistsOrInvalidErrorCode
 		if errCode, ok := errors[0].(int); ok {
 			data.ErrorCode = errCode
@@ -47,12 +49,12 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 	// vars := mux.Vars(r)
 	password := strings.TrimSpace(r.FormValue("password"))
 	passwordConfirm := r.FormValue("passwordconfirm")
-	user := model.User{
+	user := &model.User{
 		Email: strings.TrimSpace(r.FormValue("email")),
 		Password: []byte(password),
 	}
 	// Save User in context to use it on Signup page later if registration failed
-	context.Set(r, "user", user)
+	context.Set(r, "user", *user)
 
 	// Registration failed handler
 	failed := func(errCode int) {
@@ -72,7 +74,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validation: if Password is weak
-	passwordIsWeak := len(password) <= 6
+	passwordIsWeak := len(password) < 6
 	if passwordIsWeak {
 		failed(PasswordIsWeakErrorCode)
 		return
@@ -85,8 +87,17 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := authorization.RegisterUser(w, r, &user); err != nil {
-		failed(RegistrationInternalServerError)
+	// Crate new account
+	if err := authorization.RegisterUser(w, r, user); err != nil {
+		failed(RegistrationInternalServerErrorCode)
+		return
+	}
+
+	// Authorize new account
+	user.Password = []byte(password)
+	if err := authorization.AuthorizeUser(w, r, user); err != nil {
+		logger.Info.Print("Signup. AuthorizeUser error:  %+v", err)
+		failed(AuthorizationErrorCode)
 		return
 	}
 
@@ -124,8 +135,10 @@ func validateEmail(email string) int{
 	}
 
 	// check if email exists in database
-	user := model.User{}
-	if err := user.LoadByEmail(user.Email); err == nil {
+	user := model.User{
+		Email: email,
+	}
+	if err := user.LoadByEmail(); err == nil {
 		// user already exists with specified email
 		respStatus = http.StatusForbidden
 	}
@@ -134,6 +147,8 @@ func validateEmail(email string) int{
 		// set "Ok" status only if all validation steps passed
 		respStatus = http.StatusOK
 	}
+
+	logger.Info.Printf("validateEmail status: %v", respStatus)
 
 	return respStatus
 }

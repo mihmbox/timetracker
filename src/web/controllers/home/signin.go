@@ -9,6 +9,7 @@ import (
 	"web/authorization"
 	"model"
 )
+
 func SigninPage(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		Email  string
@@ -32,6 +33,7 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		Email: r.FormValue("email"),
 		Password: []byte(r.FormValue("password")),
 	}
+
 	err := authorization.AuthorizeUser(w, r, user)
 	if err != nil {
 		// Authentication failed

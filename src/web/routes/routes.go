@@ -18,4 +18,7 @@ func InitRoutes(mx *mux.Router) {
 	mx.HandleFunc("/signup", homeCtrl.SignupPage).Methods("GET")
 	mx.HandleFunc("/signup", homeCtrl.Signup).Methods("POST")
 	mx.HandleFunc("/api/signup/validate_email/{email}", homeCtrl.SignupValidateEmail)
+
+	//mx.HandleFunc("/dashboard", dashboard.DashboardPage)
+	//mx.HandleFunc("/app/{company}/dashboard", dashboard.DashboardPage)
 }
