@@ -4,10 +4,10 @@ import (
 	"app"
 	"net/http"
 	"logger"
+	"web/context"
 )
 
-func ExecuteTemplate(wr http.ResponseWriter, template string, data interface{}) {
-
+func ExecuteTemplate(wr http.ResponseWriter, r *http.Request, template string, data interface{}) {
 	// Reload template to have latest changes only in Dev mode
 	if app.App.Config.Env.DevMode {
 		if err := app.App.LoadTemplates(); err != nil {
@@ -15,9 +15,10 @@ func ExecuteTemplate(wr http.ResponseWriter, template string, data interface{}) 
 		}
 	}
 
-	err := app.App.Template.ExecuteTemplate(wr, template, data)
+	ctx := context.BuildContext(data, r)
+	err := app.App.Template.ExecuteTemplate(wr, template, ctx)
 	if err != nil {
-		RespondError(wr,err)
+		RespondError(wr, err)
 	}
 }
 

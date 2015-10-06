@@ -41,7 +41,7 @@ func SignupPage(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	controllers.ExecuteTemplate(w, "signup", data)
+	controllers.ExecuteTemplate(w, r, "signup", data)
 }
 
 // Validate user input, register new user and redirects to Dashboard

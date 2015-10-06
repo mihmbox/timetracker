@@ -1,10 +1,12 @@
 package middleware
 
 import (
+	"web/context"
 	"logger"
 	"net/http"
 	"strings"
 	"web/session"
+	gorillaCtx "github.com/gorilla/context"
 )
 
 // Authorization web.middleware.
@@ -26,11 +28,13 @@ func AuthMiddleware(h http.Handler, prefix string) http.Handler {
 
 		if err != nil || len(user.Email) == 0 {
 			// User is not logged in -> redirect to Sign-In page
-			http.Redirect(w, r, "/signin?r="+r.RequestURI, 302)
+			http.Redirect(w, r, "/signin?r=" + r.RequestURI, 302)
 			return
 		}
 
 		logger.Info.Println("User id= ", user.ID)
+		// save current user in http context (it's more efficient to get it from context than session)
+		gorillaCtx.Set(r, context.ContextAuthUserKey, *user)
 
 		// User is authenticated
 		h.ServeHTTP(w, r)

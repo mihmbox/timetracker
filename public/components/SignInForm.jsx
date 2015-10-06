@@ -1,12 +1,6 @@
 import React from 'react';
 
 export default class SignInForm extends React.Component {
-    //constructor(props) {
-    //    super(props);
-    //    this.state = {
-    //        isFormValid: false
-    //    };
-    //}
     static defaultProps = {
         showHeader: true,
         loginFailed: false,
@@ -27,7 +21,7 @@ export default class SignInForm extends React.Component {
     };
 
     render() {
-        var formUrl = location.pathname + location.search;
+        var formUrl = '/signin' + location.search;
         return (
             <div className="SignInForm">
                 {this.props.showHeader && (

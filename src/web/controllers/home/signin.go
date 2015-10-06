@@ -25,7 +25,7 @@ func SigninPage(w http.ResponseWriter, r *http.Request) {
 		data.Email = r.FormValue("email")
 	}
 
-	controllers.ExecuteTemplate(w, "signin", data)
+	controllers.ExecuteTemplate(w, r, "signin", data)
 }
 
 func Signin(w http.ResponseWriter, r *http.Request) {
