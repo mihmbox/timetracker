@@ -1,5 +1,5 @@
 Project uses npm to manage dependencies
-To build assets webpack is used:
+To build assets by webpack:
     - build: npm run build
     - dev-server: npm run dev
 
